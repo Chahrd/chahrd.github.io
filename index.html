@@ -2,16 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>WatchX</title>
+  <title>WatchX - Free Movies & HD Streaming</title>
   
   <!-- Monetag Vignette Script -->
   <script>(function(s){s.dataset.zone='12114695',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-</head>
 
   <meta name="monetag" content="ab8032d4...">
-  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WatchX - Free Movies & HD Streaming</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
@@ -60,6 +57,13 @@
 
     <!-- Embedded Player Block -->
     <section id="detailsSection" class="hidden glass p-4 md:p-6 rounded-2xl border border-gray-800 space-y-6">
+      
+      <!-- User Notice Banner -->
+      <div class="bg-red-500/10 border border-red-500/30 text-red-300 text-xs md:text-sm p-3 rounded-xl flex items-center gap-2">
+        <i class="fa-solid fa-triangle-exclamation text-red-400 text-base flex-shrink-0"></i>
+        <span>Playing automatically on <strong>Server 2</strong>. If it fails to load, please switch to <strong>Server 3</strong>.</span>
+      </div>
+
       <div class="space-y-3">
         <div class="flex items-center justify-between flex-wrap gap-2">
           <h3 id="playerTitle" class="text-lg font-bold text-white flex items-center gap-2">
@@ -67,9 +71,9 @@
           </h3>
           
           <div class="flex gap-2">
-            <button onclick="switchServer(1)" class="bg-gray-800 hover:bg-gray-700 text-white text-xs font-semibold px-2.5 py-1.5 rounded border border-gray-700">Server 1</button>
-            <button onclick="switchServer(2)" class="bg-gray-800 hover:bg-gray-700 text-white text-xs font-semibold px-2.5 py-1.5 rounded border border-gray-700">Server 2</button>
-            <button onclick="switchServer(3)" class="bg-gray-800 hover:bg-gray-700 text-white text-xs font-semibold px-2.5 py-1.5 rounded border border-gray-700">Server 3</button>
+            <button id="srvBtn1" onclick="switchServer(1)" class="bg-gray-800 hover:bg-gray-700 text-white text-xs font-semibold px-2.5 py-1.5 rounded border border-gray-700">Server 1</button>
+            <button id="srvBtn2" onclick="switchServer(2)" class="bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-2.5 py-1.5 rounded border border-red-500">Server 2 (Default)</button>
+            <button id="srvBtn3" onclick="switchServer(3)" class="bg-gray-800 hover:bg-gray-700 text-white text-xs font-semibold px-2.5 py-1.5 rounded border border-gray-700">Server 3</button>
           </div>
         </div>
 
@@ -181,7 +185,6 @@
         document.getElementById('footerAdContainer').innerHTML = savedFooterAd;
       }
 
-      // Load movies instantly without waiting for an external API request
       showDefaultGrid();
     });
 
@@ -246,7 +249,8 @@
       document.getElementById('detailDate').innerText = m.release_date ? `Released: ${m.release_date}` : '';
       document.getElementById('detailPoster').src = m.poster_path ? `https://image.tmdb.org/t/p/w500${m.poster_path}` : '';
 
-      switchServer(1);
+      // Set Server 2 as default on load
+      switchServer(2);
 
       document.getElementById('streamBtn').href = MONETAG_LINK;
       document.getElementById('detailsSection').scrollIntoView({ behavior: 'smooth' });
@@ -256,12 +260,24 @@
       if (!currentTmdbId) return;
       const iframe = document.getElementById('videoPlayer');
       
+      const btn1 = document.getElementById('srvBtn1');
+      const btn2 = document.getElementById('srvBtn2');
+      const btn3 = document.getElementById('srvBtn3');
+
+      // Reset button styles
+      [btn1, btn2, btn3].forEach(b => {
+        b.className = "bg-gray-800 hover:bg-gray-700 text-white text-xs font-semibold px-2.5 py-1.5 rounded border border-gray-700";
+      });
+
       if (serverNum === 1) {
         iframe.src = `https://vidsrc.xyz/embed/movie/${currentTmdbId}`;
+        btn1.className = "bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-2.5 py-1.5 rounded border border-red-500";
       } else if (serverNum === 2) {
         iframe.src = `https://www.2embed.cc/embed/${currentTmdbId}`;
+        btn2.className = "bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-2.5 py-1.5 rounded border border-red-500";
       } else if (serverNum === 3) {
         iframe.src = `https://vidsrc.me/embed/movie?tmdb=${currentTmdbId}`;
+        btn3.className = "bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-2.5 py-1.5 rounded border border-red-500";
       }
     }
 
